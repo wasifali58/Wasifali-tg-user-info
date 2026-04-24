@@ -1,6 +1,5 @@
-// TELEGRAM USER INFO API - WASIF ALI
-// Root endpoint: /?username=@FREEHACKS95
-// File preview: /userinfo.json?username=@FREEHACKS95
+// TELEGRAM USER INFO API - AKASH BACKEND
+// Developer: WASIF ALI | Telegram: @FREEHACKS95
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,6 +22,7 @@ export default async function handler(req, res) {
       cleanUsername = '@' + cleanUsername;
     }
 
+    // Akash API call (no timeout)
     const response = await fetch(`https://akashhacker.gt.tc/telegram.php?username=${encodeURIComponent(cleanUsername)}`);
     const data = await response.json();
 
@@ -43,18 +43,26 @@ export default async function handler(req, res) {
         bio: data.data?.profile?.bio || null,
         verified: data.data?.profile?.verified || false,
         premium: data.data?.profile?.premium || false,
-        profile_type: data.data?.profile?.profile_type || "user"
+        has_photo: data.data?.profile?.has_photo || false,
+        profile_type: data.data?.profile?.profile_type || "user",
+        profile_photo: data.data?.profile?.profile_photo || null
       },
       contacts: {
         telegram_link: `https://t.me/${cleanUsername.replace('@', '')}`,
-        direct_message: `tg://resolve?domain=${cleanUsername.replace('@', '')}`
+        direct_message: `tg://resolve?domain=${cleanUsername.replace('@', '')}`,
+        is_public: true
       },
       activity: {
         online_status: data.data?.activity?.online_status || "offline",
         last_seen: data.data?.activity?.last_seen || null,
-        subscribers: data.data?.activity?.subscribers || 0
+        subscribers: data.data?.activity?.subscribers || 0,
+        activity_score: data.data?.activity?.activity_score || 0
       },
       channels_groups: data.data?.channels_groups || [],
+      analysis: {
+        profile_quality: data.data?.analysis?.profile_quality || "unknown",
+        account_age: data.data?.analysis?.account_age || "unknown"
+      },
       developer: "WASIF ALI",
       telegram: "@FREEHACKS95"
     };
@@ -64,7 +72,7 @@ export default async function handler(req, res) {
   } catch (error) {
     return res.status(200).json({
       success: false,
-      message: "Service unavailable",
+      message: "Service unavailable. Please try again.",
       developer: "WASIF ALI",
       telegram: "@FREEHACKS95"
     });
